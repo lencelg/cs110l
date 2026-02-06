@@ -37,4 +37,60 @@ fn main() {
     // println!("random word: {}", secret_word);
 
     // Your code here! :)
+    println!("Welcome to CS110L Hangman!");
+    let mut cnt = 0;
+    let mut right_guess_cnt = 0;
+    let mut current_guess_char = Vec::new();
+    let mut position_guess = Vec::new();
+    for _i in 0..secret_word_chars.len(){
+        position_guess.push(false);
+    }
+    loop{
+        if right_guess_cnt == secret_word.len(){
+            println!("Congratulations you guessed the secret word: {}!", secret_word);
+            break;
+        }else if cnt == NUM_INCORRECT_GUESSES{
+            println!("Sorry, you ran out of guesses!");
+            break;
+        }
+        print!("The word so far is ");
+        for i in 0..secret_word_chars.len(){
+            if !position_guess[i]{
+                print!("-");
+            }else {
+                print!("{}", secret_word.as_bytes()[i] as char);
+            }
+        }
+        println!();
+        print!("You have guessed the following letters: ");
+        for a in current_guess_char.iter(){
+            print!("{}", a);
+        }
+        println!();
+        println!("You have {} guesses left", NUM_INCORRECT_GUESSES - cnt);
+        print!("Please guess a letter: ");
+        io::stdout()
+            .flush()
+            .expect("Error flushing stdout.");
+        let mut guess = String::new();
+        io::stdin()
+            .read_line(&mut guess)
+            .expect("Error reading line.");
+        cnt += 1;
+        current_guess_char.push(guess.chars().next().unwrap());
+        let mut contained = false;
+        for i in 0..secret_word_chars.len(){
+            if !position_guess[i] && secret_word_chars[i] == guess.chars().next().unwrap(){
+                cnt -= 1;
+                right_guess_cnt += 1;
+                position_guess[i] = true;
+                contained = true;
+                break;
+            }
+        }
+        if !contained{
+            println!("Sorry, that letter is not in the word");
+        }
+        println!();
+    }
 }
